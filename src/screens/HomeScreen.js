@@ -1,17 +1,24 @@
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { responsiveHeight, responsiveWidth, windowWidth } from '../Utils/ResponsiveUI'
 import { Calendar } from 'react-native-calendars'
 import { Colors } from '../Constants/Colors'
 import { dummySchedule } from '../Constants/GlobalConstants'
 import Notifications from '../Utils/Notifications'
 import NotifIcon from '../Assets/Icons/notif.png'
+import { filterSchedule, generateTime } from '../Utils/UtilsGlobal'
 
 export default function HomeScreen({ navigation }) {
     const [date, setDate] = useState('')
+    const [schedule, setSchedule] = useState(filterSchedule(dummySchedule));
 
     const getNotification = () => {
-        Notifications.scheduleNotification(new Date(Date.now()))
+        Notifications.scheduleNotification("Try Notification!", new Date(Date.now()))
+    }
+
+    const selectDay = (d) => {
+        setDate(d)
+        setSchedule(filterSchedule(dummySchedule, new Date(d.timestamp)))
     }
 
     return (
@@ -20,7 +27,7 @@ export default function HomeScreen({ navigation }) {
                 <View style={styles.scroll}>
                     <View style={styles.conCal}>
                         <Calendar
-                            onDayPress={x => setDate(x)}
+                            onDayPress={selectDay}
                             initialDate={date}
                             style={{ margin: responsiveWidth(15) }}
                             theme={{
@@ -37,10 +44,10 @@ export default function HomeScreen({ navigation }) {
                         />
                     </View>
                     <Text style={styles.title}>List Schedule</Text>
-                    {dummySchedule[date?.dateString]?.map(x => (
-                        <View style={styles.conSchdl}>
+                    {schedule?.map((x, i) => (
+                        <View style={styles.conSchdl} key={i}>
                             <Text style={styles.titleSchdl}>{x.title}</Text>
-                            <Text style={styles.timeSchl}>{x.time}</Text>
+                            <Text style={styles.timeSchl}>{generateTime(x.time)}</Text>
                         </View>
                     ))}
                 </View>
@@ -60,7 +67,7 @@ const styles = StyleSheet.create({
     scroll: {
         alignItems: 'center',
         paddingHorizontal: responsiveWidth(20),
-        paddingTop: responsiveHeight(80)
+        paddingVertical: responsiveHeight(80)
     },
     title: {
         fontSize: 20,

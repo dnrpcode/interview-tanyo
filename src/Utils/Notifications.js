@@ -27,11 +27,11 @@ class Notifications {
         })
     }
 
-    scheduleNotification(date) {
+    scheduleNotification(msg, date) {
         PushNotification.localNotificationSchedule({
             channelId: 'reminders',
             title: 'Task Tanyo',
-            message: 'Scedule Today!',
+            message: msg,
             date,
         })
     }

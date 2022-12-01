@@ -2,19 +2,34 @@ import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'reac
 import React, { useState } from 'react'
 import { responsiveHeight, responsiveWidth, windowWidth } from '../Utils/ResponsiveUI';
 import { Colors } from '../Constants/Colors';
-import { emailUser, passwordUser } from '../Constants/GlobalConstants';
+import { dummySchedule, emailUser, passwordUser } from '../Constants/GlobalConstants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Notifications from '../Utils/Notifications';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const onLogin = () => {
+  const pushNotif = async () => {
+    const onceLogin = await AsyncStorage.getItem('onceLogin')
+    if(onceLogin){
+      navigation.navigate('Home')
+    }else{
+      dummySchedule.map((x) => {
+        return Notifications.scheduleNotification(x.title, new Date(x.time))
+      })
+      await AsyncStorage.setItem('onceLogin', JSON.stringify(true))
+      navigation.navigate('Home')
+    }
+  }
+
+  const validateLogin = () => {
     if (!email || !password) {
       Alert.alert("Mohon maaf", "Lengkapi form input terlebih dahulu!")
-    } else if (email !== emailUser && password !== passwordUser) {
+    } else if (email !== emailUser || password !== passwordUser) {
       Alert.alert("Mohon maaf", "Email / Password yang kamu masukan tidak cocok!")
     } else {
-      navigation.navigate('Home')
+      pushNotif()
     }
   }
 
@@ -35,7 +50,7 @@ export default function LoginScreen({ navigation }) {
         value={password}
         secureTextEntry={true}
       />
-      <TouchableOpacity onPress={onLogin} style={styles.button}>
+      <TouchableOpacity onPress={validateLogin} style={styles.button}>
         <Text style={styles.txtBtn}>Login</Text>
       </TouchableOpacity>
     </View>
