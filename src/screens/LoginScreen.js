@@ -9,8 +9,6 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState('');
 
   const onLogin = () => {
-      navigation.navigate('Home')
-      return 
     if (!email || !password) {
       Alert.alert("Mohon maaf", "Lengkapi form input terlebih dahulu!")
     } else if (email !== emailUser && password !== passwordUser) {
