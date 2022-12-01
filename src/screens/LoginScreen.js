@@ -75,7 +75,9 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   title: {
-    fontSize: 20,
-    marginBottom: responsiveHeight(40)
+    fontSize: 30,
+    marginBottom: responsiveHeight(50),
+    fontWeight: '900',
+    color: Colors.primary
   }
 })
