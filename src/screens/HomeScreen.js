@@ -1,12 +1,18 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { responsiveHeight, responsiveWidth, windowWidth } from '../Utils/ResponsiveUI'
 import { Calendar } from 'react-native-calendars'
 import { Colors } from '../Constants/Colors'
 import { dummySchedule } from '../Constants/GlobalConstants'
+import Notifications from '../Utils/Notifications'
+import NotifIcon from '../Assets/Icons/notif.png'
 
 export default function HomeScreen({ navigation }) {
     const [date, setDate] = useState('')
+
+    const getNotification = () => {
+        Notifications.scheduleNotification(new Date(Date.now()))
+    }
 
     return (
         <View style={styles.page}>
@@ -14,7 +20,7 @@ export default function HomeScreen({ navigation }) {
                 <View style={styles.scroll}>
                     <View style={styles.conCal}>
                         <Calendar
-                            onDayPress={x => { setDate(x), console.log("press day", x) }}
+                            onDayPress={x => setDate(x)}
                             initialDate={date}
                             style={{ margin: responsiveWidth(15) }}
                             theme={{
@@ -39,6 +45,9 @@ export default function HomeScreen({ navigation }) {
                     ))}
                 </View>
             </ScrollView>
+            <TouchableOpacity onPress={getNotification} style={styles.btnNotif}>
+                <Image source={NotifIcon} style={styles.iconNotif}/>
+            </TouchableOpacity>
         </View>
     )
 }
@@ -101,5 +110,22 @@ const styles = StyleSheet.create({
     timeSchl: {
         fontSize: 12,
         fontWeight: '700',
+    },
+    btnNotif: {
+        zIndex: 2,
+        backgroundColor: Colors.primary,
+        width: responsiveHeight(60),
+        height: responsiveHeight(60),
+        borderRadius: responsiveHeight(30),
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'absolute',
+        bottom: responsiveHeight(20),
+        alignSelf: 'center'
+    },
+    iconNotif: {
+        height: responsiveHeight(25), 
+        width: responsiveHeight(25), 
+        resizeMode: 'contain'
     }
 })
