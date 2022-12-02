@@ -1,3 +1,5 @@
+import * as Yup from "yup";
+
 export const isToday = (someDate, selectDay) => {
     return someDate.getDate() == selectDay.getDate() &&
         someDate.getMonth() == selectDay.getMonth() &&
@@ -12,3 +14,11 @@ export const generateTime = (x) => {
     const tms = new Date(x);
     return tms.getHours() + ":" + tms.getMinutes() + ":" + tms.getSeconds();
 }
+
+export const LoginSchema = Yup.object().shape({
+    email: Yup.string().email('Email tidak valid!').required('Wajib diisi!'),
+    password: Yup.string()
+        .min(2, 'Minimal 5 digit!')
+        .max(20, 'Maksimal 20 digit!')
+        .required('Wajib diisi!')
+});

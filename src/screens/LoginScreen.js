@@ -1,20 +1,36 @@
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import { Alert, StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import React from 'react'
 import { responsiveHeight, responsiveWidth, windowWidth } from '../Utils/ResponsiveUI';
 import { Colors } from '../Constants/Colors';
 import { dummySchedule, emailUser, passwordUser } from '../Constants/GlobalConstants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Notifications from '../Utils/Notifications';
+import { useFormik } from "formik";
+import TextinputLogin from '../Components/Textinput/TextinputLogin';
+import { LoginSchema } from '../Utils/UtilsGlobal';
 
 export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+
+  const {
+    handleChange,
+    handleSubmit,
+    handleBlur,
+    values,
+    errors,
+    touched
+  } = useFormik({
+    validationSchema: LoginSchema,
+    initialValues: { email: '', password: '' },
+    onSubmit: () => {
+      validateLogin()
+    }
+  });
 
   const pushNotif = async () => {
     const onceLogin = await AsyncStorage.getItem('onceLogin')
-    if(onceLogin){
+    if (onceLogin) {
       navigation.navigate('Home')
-    }else{
+    } else {
       dummySchedule.map((x) => {
         return Notifications.scheduleNotification(x.title, new Date(x.time))
       })
@@ -24,9 +40,7 @@ export default function LoginScreen({ navigation }) {
   }
 
   const validateLogin = () => {
-    if (!email || !password) {
-      Alert.alert("Mohon maaf", "Lengkapi form input terlebih dahulu!")
-    } else if (email !== emailUser || password !== passwordUser) {
+    if (values.email !== emailUser || values.password !== passwordUser) {
       Alert.alert("Mohon maaf", "Email / Password yang kamu masukan tidak cocok!")
     } else {
       pushNotif()
@@ -36,21 +50,25 @@ export default function LoginScreen({ navigation }) {
   return (
     <View style={styles.page}>
       <Text style={styles.title}>LoginScreen</Text>
-      <TextInput
-        style={styles.textInput}
+      <TextinputLogin
         placeholder="Input Email"
-        onChangeText={x => setEmail(x)}
-        value={email}
+        onChangeText={handleChange('email')}
+        onBlur={handleBlur('email')}
+        error={errors.email}
+        touched={touched.email}
+        value={values.email}
         keyboardType='email-address'
       />
-      <TextInput
-        style={styles.textInput}
+      <TextinputLogin
         placeholder="Input Password"
-        onChangeText={x => setPassword(x)}
-        value={password}
+        onChangeText={handleChange('password')}
+        onBlur={handleBlur('password')}
+        error={errors.password}
+        touched={touched.password}
+        value={values.password}
         secureTextEntry={true}
       />
-      <TouchableOpacity onPress={validateLogin} style={styles.button}>
+      <TouchableOpacity onPress={handleSubmit} style={styles.button}>
         <Text style={styles.txtBtn}>Login</Text>
       </TouchableOpacity>
     </View>
@@ -65,16 +83,6 @@ const styles = StyleSheet.create({
     width: windowWidth,
     paddingHorizontal: responsiveWidth(20),
     backgroundColor: 'white'
-  },
-  textInput: {
-    height: 40,
-    // backgroundColor: 'red',
-    width: '100%',
-    marginBottom: responsiveHeight(40),
-    borderColor: Colors.primary,
-    borderWidth: 1,
-    paddingLeft: responsiveWidth(15),
-    borderRadius: responsiveWidth(5),
   },
   button: {
     height: responsiveHeight(50),
